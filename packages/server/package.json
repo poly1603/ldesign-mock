@@ -1,0 +1,56 @@
+{
+  "name": "@ldesign/mock-server",
+  "version": "1.0.0",
+  "description": "Mock 服务器 - RESTful & GraphQL 支持",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "clean": "rimraf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ldesign/mock-core": "workspace:*",
+    "express": "^4.21.2",
+    "cors": "^2.8.5",
+    "ws": "^8.18.3",
+    "graphql": "^16.9.0",
+    "graphql-yoga": "^5.10.4",
+    "@graphql-tools/schema": "^10.0.0",
+    "http-proxy-middleware": "^3.0.3",
+    "path-to-regexp": "^6.3.0",
+    "fast-glob": "^3.3.2",
+    "chalk": "^5.6.2",
+    "chokidar": "^3.6.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.24",
+    "@types/node": "^20.11.16",
+    "@types/ws": "^8.18.1",
+    "rimraf": "^5.0.5",
+    "tsup": "^8.0.0",
+    "typescript": "^5.7.3",
+    "vitest": "^1.6.1"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
+
