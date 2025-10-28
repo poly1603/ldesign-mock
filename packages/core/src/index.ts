@@ -22,3 +22,9 @@ export { ScenarioManager, createScenarioManager } from './scenario/ScenarioManag
 // 导出数据库
 export { MockDatabase, createMockDatabase } from './database/MockDatabase.js'
 
+// 导出请求录制器
+export { RequestRecorder, createRequestRecorder } from './recorder/RequestRecorder.js'
+
+// 导出数据导入导出
+export { DataImportExport, createDataImportExport } from './importer/DataImportExport.js'
+

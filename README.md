@@ -12,6 +12,9 @@
 - 🔄 **热重载** - 修改 Mock 配置后自动重启
 - 📊 **可视化管理** - Web 界面管理 Mock 数据
 - 🌐 **WebSocket 实时通信** - 实时日志和状态更新
+- 🎬 **请求录制** - 录制真实 API 请求并转换为 Mock 配置
+- 📥 **导入导出** - 支持 JSON/YAML/TS/JS 格式的数据交换
+- 📦 **模板库** - 内置电商、CMS 等常用业务模板
 
 ## 📦 安装
 
@@ -231,6 +234,186 @@ npx lmock scenario current
 }
 ```
 
+## 🎬 请求录制
+
+录制真实 API 请求，快速生成 Mock 配置：
+
+```bash
+# 录制所有请求（手动停止）
+npx lmock record http://api.example.com
+
+# 录制 30 秒
+npx lmock record http://api.example.com -d 30000
+
+# 只录制 GET 和 POST 请求
+npx lmock record http://api.example.com --methods GET,POST
+
+# 只录制特定路径
+npx lmock record http://api.example.com --paths '/api/users/*,/api/products/*'
+
+# 输出为 TypeScript 格式
+npx lmock record http://api.example.com -f ts -o mock/api.ts
+```
+
+录制流程：
+1. 运行录制命令
+2. 在另一个终端或浏览器中操作目标 API
+3. 按 Ctrl+C 停止录制（或等待自动停止）
+4. 自动生成 Mock 文件
+
+## 📥 数据导入导出
+
+### 导出数据
+
+将 Mock 数据导出为不同格式：
+
+```bash
+# 导出为 JSON
+npx lmock export mock-data.json
+
+# 导出为 TypeScript
+npx lmock export mock-data.ts -f typescript
+
+# 导出指定场景，包含元数据
+npx lmock export success-data.json -s success -m
+
+# 导出为压缩 JSON
+npx lmock export mock-data.json -c
+```
+
+### 导入数据
+
+从文件导入 Mock 数据：
+
+```bash
+# 导入 JSON 文件
+npx lmock import mock-data.json
+
+# 覆盖现有数据
+npx lmock import mock-data.json -o
+
+# 合并到现有数据
+npx lmock import mock-data.json -m
+
+# 导入到指定场景
+npx lmock import mock-data.json -s testing
+```
+
+### 程序化使用
+
+```javascript
+import { DataImportExport } from '@ldesign/mock-core'
+
+const exporter = new DataImportExport()
+
+// 导出数据
+await exporter.exportData(
+  { routes: mockRoutes, logs: requestLogs },
+  {
+    format: 'json',
+    output: './exports/mock-data.json',
+    scenario: 'production',
+    includeMetadata: true,
+  }
+)
+
+// 导入数据
+const data = await exporter.importData({
+  input: './exports/mock-data.json',
+  merge: true,
+})
+```
+
+## 📦 模板库
+
+内置常用业务场景模板，开箱即用：
+
+### 电商系统模板
+
+包含商品、订单、购物车、支付等功能：
+
+```javascript
+// 商品列表
+GET /api/products
+GET /api/products/:id
+GET /api/categories
+
+// 购物车
+GET /api/cart
+POST /api/cart
+PUT /api/cart/:id
+DELETE /api/cart/:id
+
+// 订单
+GET /api/orders
+GET /api/orders/:id
+POST /api/orders
+POST /api/orders/:id/cancel
+
+// 支付
+POST /api/payment/create
+GET /api/payment/:id/status
+
+// 地址
+GET /api/addresses
+POST /api/addresses
+PUT /api/addresses/:id
+DELETE /api/addresses/:id
+```
+
+### CMS 内容管理模板
+
+包含文章、分类、标签、评论等功能：
+
+```javascript
+// 文章
+GET /api/articles
+GET /api/articles/:id
+POST /api/articles
+PUT /api/articles/:id
+DELETE /api/articles/:id
+POST /api/articles/:id/publish
+
+// 分类和标签
+GET /api/categories
+GET /api/tags
+POST /api/categories
+POST /api/tags
+
+// 评论
+GET /api/comments
+POST /api/comments/:id/approve
+POST /api/comments/:id/reject
+DELETE /api/comments/:id
+
+// 媒体库
+GET /api/media
+POST /api/media/upload
+DELETE /api/media/:id
+
+// 统计
+GET /api/dashboard/stats
+GET /api/articles/popular
+```
+
+### 使用模板
+
+```javascript
+// 在你的 Mock 文件中引用模板
+import ecommerce from '@ldesign/mock/templates/ecommerce.template.js'
+import cms from '@ldesign/mock/templates/cms.template.js'
+
+export default {
+  ...ecommerce.routes,
+  ...cms.routes,
+  
+  // 添加自定义路由
+  'GET /api/custom': {
+    response: { data: 'custom' }
+  },
+}
+```
+
 ## 🌐 GraphQL 支持
 
 启用 GraphQL 后，访问 `/graphql` 端点：
@@ -309,7 +492,7 @@ pnpm dev
 pnpm test
 ```
 
-## 📝 CLI 命令
+## 📋 CLI 命令
 
 ```bash
 # 初始化
@@ -330,6 +513,29 @@ lmock start [options]
 lmock scenario list              # 列出所有场景
 lmock scenario switch [name]     # 切换场景
 lmock scenario current           # 查看当前场景
+
+# 请求录制
+lmock record <target> [options]  # 录制真实 API 请求
+  -o, --output <path>   输出文件路径 (默认: mock/recorded.js)
+  -f, --format <format> 输出格式 (js|ts|json) (默认: js)
+  -d, --duration <ms>   录制时长（毫秒）
+  -m, --max <count>     最大录制请求数
+  --methods <methods>   只录制指定方法（逗号分隔）
+  --paths <patterns>    只录制匹配的路径（逗号分隔）
+  --exclude <patterns>  排除的路径（逗号分隔）
+
+# 数据导出
+lmock export <output> [options]  # 导出 Mock 数据
+  -f, --format <format> 导出格式 (json|yaml|typescript|javascript)
+  -s, --scenario <name> 指定场景名称
+  -c, --compress        压缩输出
+  -m, --metadata        包含元数据和日志
+
+# 数据导入
+lmock import <input> [options]   # 导入 Mock 数据
+  -o, --overwrite       覆盖已存在的数据
+  -m, --merge           合并到现有数据
+  -s, --scenario <name> 导入到指定场景
 ```
 
 ## 🤝 贡献

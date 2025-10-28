@@ -327,3 +327,177 @@ export interface GraphQLSchemaDefinition {
   resolvers: Record<string, any>
 }
 
+/**
+ * 请求录制配置
+ */
+export interface RecordConfig {
+  /** 目标 URL */
+  target: string
+  /** 输出路径 */
+  output?: string
+  /** 是否覆盖已存在的文件 */
+  overwrite?: boolean
+  /** 过滤规则 */
+  filter?: RecordFilter
+  /** 请求头 */
+  headers?: Record<string, string>
+  /** 录制时长（毫秒） */
+  duration?: number
+  /** 最大录制请求数 */
+  maxRequests?: number
+}
+
+/**
+ * 录制过滤规则
+ */
+export interface RecordFilter {
+  /** 路径匹配模式 */
+  paths?: string[]
+  /** 方法过滤 */
+  methods?: HttpMethod[]
+  /** 状态码过滤 */
+  statusCodes?: number[]
+  /** 排除路径 */
+  excludePaths?: string[]
+}
+
+/**
+ * 录制的请求
+ */
+export interface RecordedRequest {
+  /** ID */
+  id: string
+  /** 时间戳 */
+  timestamp: number
+  /** 方法 */
+  method: HttpMethod
+  /** 路径 */
+  path: string
+  /** 查询参数 */
+  query: Record<string, any>
+  /** 请求头 */
+  headers: Record<string, string>
+  /** 请求体 */
+  body?: any
+  /** 响应状态码 */
+  status: number
+  /** 响应头 */
+  responseHeaders: Record<string, string>
+  /** 响应数据 */
+  response: any
+  /** 响应时间（毫秒） */
+  duration: number
+}
+
+/**
+ * 录制会话
+ */
+export interface RecordSession {
+  /** 会话 ID */
+  id: string
+  /** 目标 URL */
+  target: string
+  /** 开始时间 */
+  startTime: number
+  /** 结束时间 */
+  endTime?: number
+  /** 录制的请求列表 */
+  requests: RecordedRequest[]
+  /** 会话状态 */
+  status: 'recording' | 'stopped' | 'completed'
+}
+
+/**
+ * 导出格式
+ */
+export type ExportFormat = 'json' | 'yaml' | 'typescript' | 'javascript'
+
+/**
+ * 导出配置
+ */
+export interface ExportConfig {
+  /** 导出格式 */
+  format: ExportFormat
+  /** 输出路径 */
+  output: string
+  /** 是否压缩 */
+  compress?: boolean
+  /** 是否包含元数据 */
+  includeMetadata?: boolean
+  /** 场景名称（可选） */
+  scenario?: string
+}
+
+/**
+ * 导入配置
+ */
+export interface ImportConfig {
+  /** 输入路径 */
+  input: string
+  /** 是否覆盖已存在的数据 */
+  overwrite?: boolean
+  /** 是否合并数据 */
+  merge?: boolean
+  /** 目标场景 */
+  targetScenario?: string
+}
+
+/**
+ * 导出的数据结构
+ */
+export interface ExportedData {
+  /** 元数据 */
+  metadata: {
+    /** 导出时间 */
+    exportedAt: number
+    /** 版本 */
+    version: string
+    /** 场景名称 */
+    scenario?: string
+    /** 描述 */
+    description?: string
+  }
+  /** 配置 */
+  config?: Partial<MockConfig>
+  /** Mock 路由 */
+  routes: MockRoute[]
+  /** 请求日志（可选） */
+  logs?: RequestLog[]
+}
+
+/**
+ * 模板元数据
+ */
+export interface TemplateMetadata {
+  /** 模板 ID */
+  id: string
+  /** 模板名称 */
+  name: string
+  /** 模板描述 */
+  description: string
+  /** 模板分类 */
+  category: string
+  /** 模板标签 */
+  tags: string[]
+  /** 作者 */
+  author?: string
+  /** 版本 */
+  version: string
+  /** 预览图 */
+  preview?: string
+}
+
+/**
+ * 模板定义
+ */
+export interface Template {
+  /** 元数据 */
+  metadata: TemplateMetadata
+  /** Mock 配置 */
+  config?: Partial<MockConfig>
+  /** Mock 路由 */
+  routes: Record<string, any>
+  /** 示例数据 */
+  examples?: any[]
+}
+

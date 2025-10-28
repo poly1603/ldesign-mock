@@ -10,6 +10,9 @@ import { fileURLToPath } from 'url'
 import { createStartCommand } from './commands/start.js'
 import { createInitCommand } from './commands/init.js'
 import { createScenarioCommand } from './commands/scenario.js'
+import { createExportCommand } from './commands/export.js'
+import { createImportCommand } from './commands/import.js'
+import { createRecordCommand } from './commands/record.js'
 
 // ESM __dirname
 const __filename = fileURLToPath(import.meta.url)
@@ -41,6 +44,9 @@ function createProgram(): Command {
   program.addCommand(createStartCommand())
   program.addCommand(createInitCommand())
   program.addCommand(createScenarioCommand())
+  program.addCommand(createExportCommand())
+  program.addCommand(createImportCommand())
+  program.addCommand(createRecordCommand())
 
   // 错误处理
   program.exitOverride()
